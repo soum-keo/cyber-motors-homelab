@@ -25,3 +25,6 @@ The Proxmox host provides the virtualization platform for the 'Cyber Motors' env
 | Purpose          | Linux infrastructure and administration server |
 
 Additional systems and services will be documented as they are added to the environment.
+-
+# 9/8/26 Set Inventory of Server
+Baseline inventory: Ubuntu Server 26.04.1 LTS running as VM 100 on Proxmox. 2 vCPU, ~2 GB RAM, 20 GB virtual disk using LVM, static IPv4 192.168.1.30/24, SSH enabled.
