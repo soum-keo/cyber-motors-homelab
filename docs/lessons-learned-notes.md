@@ -33,3 +33,29 @@ The web root is /var/www/html/.
 
 304 = resource has not changed and the client
 can use its cached copy.
+
+## UFW / Host Firewalls
+
+UFW provides a simplified interface for managing the Linux
+firewall.
+
+Key concepts:
+
+- A service can be running without being reachable from the network.
+- Listening ports can be inspected with `ss`.
+- Firewall rules determine which network connections are permitted.
+- A default-deny inbound policy allows only explicitly permitted services.
+- SSH should be allowed before enabling a restrictive firewall when
+  administering the server remotely.
+- UFW can manage both IPv4 and IPv6 rules.
+
+### Commands Practiced
+
+```bash
+sudo ss -tulpn
+sudo ufw status verbose
+sudo ufw default deny incoming
+sudo ufw default allow outgoing
+sudo ufw allow ssh
+sudo ufw allow http
+```
