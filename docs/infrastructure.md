@@ -71,8 +71,8 @@ Logs are reviewed using:
 
 ```bash
 journalctl -u nginx
-- #9/13/26
-## Host Firewall
+```
+## Host Firewall - 9/13/2026
 
 ### Purpose
 
@@ -105,3 +105,4 @@ Firewall status was verified using:
 
 ```bash
 sudo ufw status verbose
+```
