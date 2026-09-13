@@ -71,3 +71,37 @@ Logs are reviewed using:
 
 ```bash
 journalctl -u nginx
+- #9/13/26
+## Host Firewall
+
+### Purpose
+
+UFW (Uncomplicated Firewall) was configured on `ubuntu01` to
+control inbound network access to the server.
+
+The firewall follows a default-deny inbound policy, allowing
+only services currently required by the server.
+
+### Firewall Policy
+
+| Traffic | Policy |
+|---|---|
+| Incoming | Deny by default |
+| Outgoing | Allow by default |
+| Routed | Disabled |
+
+### Allowed Services
+
+| Service | Protocol | Port | Purpose |
+|---|---|---:|---|
+| SSH | TCP | 22 | Remote administration |
+| HTTP | TCP | 80 | Internal employee portal |
+
+Rules were configured for both IPv4 and IPv6 traffic.
+
+### Verification
+
+Firewall status was verified using:
+
+```bash
+sudo ufw status verbose
