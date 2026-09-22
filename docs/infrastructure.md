@@ -106,3 +106,52 @@ Firewall status was verified using:
 ```bash
 sudo ufw status verbose
 ```
+---
+## Linux Users, Groups, and Department Access - 9/21/26
+
+### Purpose
+
+`ubuntu01` was configured to simulate departmental access controls
+for the Cyber Motors business environment.
+
+Linux groups were used to represent departments and control access
+to department-specific directories.
+
+### Department Groups
+
+The following groups were created:
+
+| Group | Purpose |
+|---|---|
+| `sales` | Sales department |
+| `service` | Service department |
+| `finance` | Finance department |
+| `share` | Shared company resources |
+| `service-readers` | Users who require read-only access to Service records |
+
+The existing `it-admins` group remains available for IT administration.
+
+### Test Users
+
+A test Sales employee was created:
+
+- `sales01` — member of the `sales` group
+
+A test Finance employee was created:
+
+- `finance01` — member of the `service-readers` group
+
+Both users retain their automatically created private primary
+groups.
+
+### Department Directory Structure
+
+Department directories were created under:
+
+```text
+/srv/cyber-motors/
+├── sales/
+├── service/
+├── finance/
+└── shared/
+```
