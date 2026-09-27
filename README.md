@@ -34,3 +34,11 @@ This homelab is actively in progress as Cyber Motors is being consulted by soum-
 ## Documentation
 
 Detailed documentation of the environment, configurations, and lessons learned will be added as the project develops.
+
+### Current Infrastructure
+
+| System | Address | Platform | Role |
+|---|---|---|---|
+| `pve01` | `192.168.1.20` | Proxmox VE | Hypervisor |
+| `ubuntu01` | `192.168.1.30` | Ubuntu Server | Linux infrastructure / web server |
+| `dc01` | `192.168.1.40` | Windows Server 2025 | Future Active Directory / DNS server |
