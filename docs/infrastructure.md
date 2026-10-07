@@ -206,3 +206,16 @@ Subnet:          /24 (255.255.255.0)
 Gateway:         192.168.1.254
 DNS:             192.168.1.254
 ```
+### Windows Local Users and Groups
+
+Created local Windows users and department groups on `dc01` to establish the initial business identity structure.
+
+| Department | Local Group | User |
+|---|---|---|
+| Sales | `Sales Department` | `sales01` |
+| Service | `Service Department` | `service01` |
+| Finance | `Finance Department` | `finance01` |
+
+Windows local groups will be used to manage access to department-specific resources through NTFS permissions.
+
+> Note: The group names use the `Department` suffix because names such as `Service` conflicted with existing Windows naming/usage on the system.
