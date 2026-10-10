@@ -219,3 +219,38 @@ Created local Windows users and department groups on `dc01` to establish the ini
 Windows local groups will be used to manage access to department-specific resources through NTFS permissions.
 
 > Note: The group names use the `Department` suffix because names such as `Service` conflicted with existing Windows naming/usage on the system.
+
+### Windows Local Users, Groups, and File Permissions
+
+Created local Windows users and department groups on `dc01` to establish the initial business identity structure.
+
+| Department | Local Group | User |
+|---|---|---|
+| Sales | `Sales Department` | `sales01` |
+| Service | `Service Department` | `service01` |
+| Finance | `Finance Department` | `finance01` |
+
+The department groups provide a foundation for managing access to department-specific resources. Group membership alone does not grant access to a folder; the appropriate NTFS permissions must also be configured.
+
+#### Department Data Directories
+
+Created the following directory structure on `dc01`:
+
+```text
+C:\CompanyData\
+├── Sales\
+├── Service\
+└── Finance\
+```
+
+#### Sales Folder Permissions
+
+Configured an explicit NTFS permission entry granting the `Sales Department` group **Modify** access to `C:\CompanyData\Sales`.
+
+The permission is configured to inherit to child files and subdirectories. Existing administrator, SYSTEM, and inherited permission entries were preserved.
+
+Permissions were inspected with PowerShell's `Get-Acl` cmdlet and checked after the change.
+
+**Note:** The current configuration establishes departmental access but does not yet isolate each department from all other users. Existing inherited permissions, including permissions assigned to `BUILTIN\Users`, remain in place.
+
+The local group names use the `Department` suffix because the shorter name `Service` conflicted with existing Windows naming or usage on the system.
