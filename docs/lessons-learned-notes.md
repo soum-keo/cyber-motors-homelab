@@ -90,3 +90,22 @@ pve01       192.168.1.20
 ubuntu01    192.168.1.30
 dc01        192.168.1.40
 ```
+## Linux Service Accounts and Least Privilege
+
+Nginx uses the `www-data` account for its worker processes rather than running all request handling as root. This follows the principle of least privilege by limiting the permissions available to the web server.
+
+The `www-data` account on `ubuntu01` has UID 33, primary GID 33, and `/usr/sbin/nologin` as its configured shell. This account is intended for service operation rather than ordinary interactive login.
+
+### Why Least Privilege Matters
+
+Using overly permissive filesystem permissions, such as `chmod 777`, can allow unintended users to modify files and directories. If an attacker compromises a service, the permissions of that service's account help determine what resources the attacker can access.
+
+Departmental data should remain inaccessible to unrelated service accounts unless access is explicitly required.
+
+### Key Takeaways
+
+- Human accounts, departmental accounts, and service accounts have different purposes.
+- A service should run with only the privileges it needs.
+- Directory ownership, group membership, filesystem permissions, and ACLs work together to control access.
+- A service account's restricted login shell reduces interactive-login exposure but does not, by itself, restrict all filesystem access.
+- Security configurations should be verified rather than assumed.
