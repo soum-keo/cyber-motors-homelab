@@ -109,3 +109,97 @@ Departmental data should remain inaccessible to unrelated service accounts unles
 - Directory ownership, group membership, filesystem permissions, and ACLs work together to control access.
 - A service account's restricted login shell reduces interactive-login exposure but does not, by itself, restrict all filesystem access.
 - Security configurations should be verified rather than assumed.
+
+## Linux ACLs: Group Access and File-Level Exceptions
+
+### Goal
+
+Configure a shared business directory where Sales, Finance, and Service
+employees can access the common workspace, while restricting one
+specific file to Finance and Service.
+
+### 1. Use Groups for Normal Shared Access
+
+The employees were added to the supplementary `share` group. This is
+easier to maintain than adding a separate named-user ACL entry to the
+shared directory for every employee.
+
+Department groups such as `sales`, `service`, and `finance` remain
+useful for department-specific directories. The `share` group represents
+cross-department access.
+
+### 2. Directory Access Does Not Automatically Grant File Access
+
+Linux checks permissions along the path to a file. A user generally
+needs execute (`x`) permission on each parent directory to traverse the
+path. The file's own ACL then determines whether the user can read or
+modify its contents.
+
+Membership in `share` therefore does not automatically mean every file
+inside the shared directory must be readable or writable.
+
+### 3. Use a File ACL for a Specific Exception
+
+The test file is owned by `root:share`. Its owning-group ACL entry was
+changed to `---`, and named-user ACL entries granted read-only access to
+`finance01` and `service01`.
+
+The intended ACL was:
+
+``` text
+user::rw-
+user:finance01:r--
+user:service01:r--
+group::---
+mask::r--
+other::---
+```
+
+This allows the selected users to read the file without granting access
+through the general `share` group. It also prevents `sales01` from
+reading the file through group membership.
+
+### 4. Understand the ACL Mask
+
+The ACL mask sets the maximum effective permissions for:
+
+-   Named users, such as `user:service01`
+-   Named groups, such as `group:service-readers`
+-   The owning group, `group::`
+
+The mask does not limit the file owner's `user::` permissions or the
+`other::` permissions.
+
+The effective permission is the intersection of an applicable ACL entry
+and the mask. For example, a named-user entry of `rwx` with a mask of
+`r--` gives effective read-only access.
+
+The mask does not grant permissions on its own. The relevant ACL entry
+must grant the permission too.
+
+### 5. Verify Actual Access, Not Just Configuration
+
+The following tests were performed:
+
+-   `finance01` successfully read the file with `cat`.
+-   `service01` successfully read the file with `cat`.
+-   `sales01` received `Permission denied` when attempting to read the
+    file.
+-   `service01` was denied when `touch` attempted to update the existing
+    file's timestamps.
+
+Because the file contained text, the successful `cat` commands also
+confirmed that its contents were readable. The failed `touch` confirmed
+that read-only access did not allow that timestamp update.
+
+### Key Takeaways
+
+-   Use groups for common access and ACLs for targeted exceptions.
+-   Directory traversal and file-content permissions are separate
+    checks.
+-   Group membership does not override a restrictive file ACL.
+-   The ACL mask limits effective permissions for named users, named
+    groups, and the owning group.
+-   Verify access using the actual user account, then document the
+    tested outcome.
+
