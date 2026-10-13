@@ -155,6 +155,115 @@ Department directories were created under:
 ├── finance/
 └── shared/
 ```
+# Shared Directory Access Control
+
+## Purpose
+
+The Cyber Motors shared directory provides a common workspace for
+employees across departments while allowing individual files to have
+more restrictive permissions when required.
+
+## Shared Directory
+
+The shared directory is located at:
+
+`/srv/cyber-motors/shared`
+
+Its owner and group are `root:share`. The directory uses group-based
+access rather than individual ACL entries for each employee.
+
+The `sales01`, `finance01`, and `service01` accounts are members of the
+supplementary `share` group. This provides a maintainable way to grant
+common directory access without adding a separate named-user ACL to the
+directory for every employee.
+
+Verified membership:
+
+-   `sales01`: supplementary groups include `sales` and `share`
+-   `finance01`: supplementary groups include `share` and
+    `service-readers`
+-   `service01`: supplementary group includes `share`
+
+The directory ACL was verified as:
+
+``` text
+# owner: root
+# group: share
+user::rwx
+group::rwx
+mask::rwx
+other::---
+```
+
+## Restricted Shared File
+
+A test file was created at:
+
+`/srv/cyber-motors/shared/service-read-test.txt`
+
+The file contains a service-related document intended to be readable by
+Finance and Service, but not Sales.
+
+The file's owner and group are `root:share`. Its ACL was configured so
+the `share` group does not receive access to the file through the
+owning-group entry. Instead, Finance and Service receive explicit
+read-only access.
+
+Expected ACL:
+
+``` text
+# owner: root
+# group: share
+user::rw-
+user:finance01:r--
+user:service01:r--
+group::---
+mask::r--
+other::---
+```
+
+The ACL mask limits the effective permissions of named users, named
+groups, and the owning group. In this configuration, the named Finance
+and Service entries provide read-only access. The owning-group entry
+grants no access, so membership in `share` does not give Sales access to
+the file.
+
+## Verification
+
+Access was tested using `sudo -u` to run commands as each account.
+
+  -----------------------------------------------------------------------
+  Test                                Result
+  ----------------------------------- -----------------------------------
+  `finance01` reads the file with     Successful
+  `cat`                               
+
+  `service01` reads the file with     Successful
+  `cat`                               
+
+  `sales01` reads the file with `cat` Denied with `Permission denied`
+
+  `service01` runs `touch` on the     Denied when attempting to update
+  existing file                       timestamps
+  -----------------------------------------------------------------------
+
+The tests confirm that directory membership and file-level access can be
+managed separately. Users can access the shared directory while a
+particular file remains restricted to selected users.
+
+## Administration Notes
+
+-   Use the `share` group for normal access to the shared workspace.
+-   Use individual ACL entries for specific exceptions, such as
+    read-only access to a restricted file.
+-   Verify both directory traversal permissions and file permissions
+    when troubleshooting access.
+-   Inspect effective ACL permissions with `getfacl`; the ACL mask can
+    reduce the effective permissions shown by an entry.
+-   This configuration documents the current tested example. Review
+    permissions when adding users or changing the intended sharing
+    policy.
+
 ## Windows Server Infrastructure
 
 ### VM 200 — dc01
